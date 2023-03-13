@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/c0d33ngr/quote-generator/quote"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -16,6 +17,7 @@ var (
 	titleStyle        = lipgloss.NewStyle().MarginLeft(2)
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
 	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+	quoteDisplayed    = lipgloss.NewStyle().Margin(1, 0, 2, 4).Foreground(lipgloss.Color("#0000FF"))
 	paginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
 	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(4).PaddingBottom(1)
 	quitTextStyle     = lipgloss.NewStyle().Margin(1, 0, 2, 4)
@@ -86,7 +88,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	if m.choice != "" {
-		return quitTextStyle.Render(fmt.Sprintf("%s? Sounds good to me.", m.choice))
+		randQuote, err := quote.FetchRandomQuote(m.choice)
+		if err != nil {
+			return err.Error()
+		}
+		return quoteDisplayed.Render(randQuote)
+		//return quitTextStyle.Render(fmt.Sprintf("%s? Sounds good to me.", m.choice))
 	}
 	if m.quitting {
 		return quitTextStyle.Render("You done? That’s cool.")
@@ -96,16 +103,19 @@ func (m model) View() string {
 
 func main() {
 	items := []list.Item{
-		item("Happiness"),
-		item("Motivation"),
-		item("Love"),
-		item("Life"),
-		item("Technology"),
-		item("Romance"),
-		item("Power"),
-		item("Death"),
-		item("Knowledge"),
-		item("Spiritual"),
+		item("happiness"),
+		item("character"),
+		item("love"),
+		item("life"),
+		item("technology"),
+		item("inspirational"),
+		item("famous-quotes"),
+		item("virtue"),
+		item("honor"),
+		item("success"),
+		item("change"),
+		item("science"),
+		item("friendship"),
 	}
 
 	const defaultWidth = 20
